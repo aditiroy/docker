@@ -1,0 +1,75 @@
+Go to https://www.mirantis.com/software/docker/download/
+Register to download enterprise 
+
+Step1:
+======
+
+Take minimum 3 servers.
+
+1. Swarm Manager (UCP). 2CPU 8GB RAM and 25G disk & also we can use install the launchpad tool 
+2. Worker (for DTR). 2CPU, 4GB RAM and 40GB disk 
+2. Worker for app (any size) 
+
+Step2:
+======
+Set-up a common user and configure SSH connecion using ssh-keygen and ssh-copy-id.
+
+follow the instructions: https://github.com/lerndevops/labs/blob/master/ansible/install/ssh-keys-setup.md 
+ 
+Step3:
+======
+
+On Swarm Manager VM :
+
+1. sudo wget https://github.com/Mirantis/launchpad/releases/latest/download/launchpad-linux-x64
+2. mv launchpad-linux-x64 launchpad
+3. mv launchpad /usr/bin
+4. chmod 777 /usr/bin/launchpad
+
+Step 4:
+======
+
+1. be the user you created,configured the key with
+2. Configure a new file with name "launchpad.yaml" with below content. (The full set of options is here : https://github.com/Mirantis/launchpad/blob/master/docs/configuration-file.md) 
+
+apiVersion: launchpad.mirantis.com/mke/v1.3
+kind: mke
+metadata:
+ name: my-mke-cluster
+spec:
+  mke:
+    version: 3.3.5
+    installFlags:
+      - --admin-username=admin
+      - --admin-password=admin@1234
+  hosts:
+  - role: manager
+    ssh:
+      address: 10.168.0.2
+      keyPath: /home/devops/.ssh/id_rsa
+      user: devops
+      port: 22
+  - role: worker
+    ssh:
+      address: 10.168.0.3
+      keyPath: /home/devops/.ssh/id_rsa
+      user: devops
+      port: 22
+  - role: worker
+    ssh:
+      address: 10.168.0.4
+      keyPath: /home/devops/.ssh/id_rsa
+      user: devops
+      port: 22
+    
+Step3:
+======
+launchpad version # it returns the version 
+launchpad register # just give the values as it asked
+launchpad apply # this takes time and sets up Docker UCP.
+
+
+
+
+
+
